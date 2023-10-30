@@ -16,8 +16,8 @@ const Banner = () => {
     const swipper = <>
         <Swiper  navigation={true} modules={[Navigation]} className="mySwiper"
             slidesPerView={1}
-            onSlideChange={() => console.log('slide change')}
-            onSwiper={(swiper) => console.log(swiper)}
+           
+          
         >
 
             <SwiperSlide>

@@ -1,14 +1,36 @@
 import { Link, NavLink } from "react-router-dom";
 import { FaSearch, FaShoppingBag, } from "react-icons/fa";
 import logo from '../assets/icons/logo.svg';
+import { useContext } from "react";
+import { AuthContext } from "../contextProvider/AuthProvider";
 const Navbar = () => {
+    const {user,logOut} = useContext(AuthContext);
+    //handelLogOut
+    const handelLogOut = () =>{
+        logOut()
+        .then(() =>{
+
+        })
+        .catch(() =>{
+            
+        })
+    }
+    
     const navbarLinks = <>
         <NavLink to ='/'><li><a>Home</a></li></NavLink>
         <NavLink to='/about' ><li><a>About</a></li></NavLink>
         <NavLink to ='services'><li><a>Services</a></li></NavLink>
         <NavLink to ='blogs'><li><a>Blog</a></li></NavLink>
         <NavLink to ='/contact'><li><a>Contact</a></li></NavLink>
+        {
+            user?.email? <>
+              <NavLink to ='/orders'><li><a>My orders</a></li></NavLink>
+            <button onClick={handelLogOut}><li><a>Log Out</a></li></button>
+            </>:
+            <NavLink to ='/login'><li><a>Login</a></li></NavLink>
+        }
     </>
+    
     return (
         <div className="navbar bg-base-100 md:py-4 ">
             <div className="navbar-start">

@@ -1,8 +1,66 @@
 import { Link } from 'react-router-dom';
 import signupImg from '../../assets/images/login/login.svg';
 import { FaGithub, FaGoogle} from "react-icons/fa";
+import { useContext } from 'react';
+import { AuthContext } from '../../contextProvider/AuthProvider';
+import Swal from 'sweetalert2';
 
 const SignUp = () => {
+const {creteUsers} = useContext(AuthContext);
+
+// for all information users
+const handelSingUpUser = (event) =>{
+    event.preventDefault();
+    const form = event.target;
+    const userName = form.name.value;
+    const userEmail = form.email.value;
+    const userPassword = form.password.value;
+    const userInfo = {userName, userEmail, userPassword};
+    console.log(userInfo);
+
+    /// befor send info some authantications
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+    if(userPassword.length < 6){
+        Swal.fire({
+        icon: 'error',
+        text: 'Password must be 6 char or more',
+    
+      })
+      return
+    } else if (!passwordRegex.test(userPassword)) {
+        Swal.fire({
+            icon: 'error',
+            text: 'Please give an strong password',
+        
+          })
+          return
+    } 
+
+    /// funtion for crete user
+
+    creteUsers(userEmail, userPassword)
+    .then(res => {
+        console.log(res.user);
+        Swal.fire({
+            icon: 'success',
+            text: 'User creted sucessfuly'
+        
+          })
+    })
+    .catch(err => {
+        console.log(err.message);
+        Swal.fire({
+            icon: 'error',
+            text: err.message
+        
+          })
+          return
+    })
+   form.reset()
+}
+
+
+
     return (
         <div className="grid md:grid-cols-2 pb-10 pt-10 justify-center items-center">
             <div className="dd">
@@ -16,24 +74,24 @@ const SignUp = () => {
 
                         </div>
                         <div className="card  w-full max-w-sm md:max-w-full">
-                            <form className="card-body">
+                            <form className="card-body" onSubmit={handelSingUpUser}>
                                 <div className="form-control">
                                     <label className="label">
                                         <span className="label-text text-lg font-bold">Name</span>
                                     </label>
-                                    <input type="text" placeholder="Your name" className="input input-bordered" required />
+                                    <input name='name' type="text" placeholder="Your name" className="input input-bordered" required />
                                 </div>
                                 <div className="form-control">
                                     <label className="label">
                                         <span className="label-text text-lg font-bold">Email</span>
                                     </label>
-                                    <input type="email" placeholder="Your email" className="input input-bordered" required />
+                                    <input name='email' type="email" placeholder="Your email" className="input input-bordered" required />
                                 </div>
                                 <div className="form-control">
                                     <label className="label">
                                         <span className="label-text text-lg font-bold">Confirm Password</span>
                                     </label>
-                                    <input type="password" placeholder="Your password" className="input input-bordered" required />
+                                    <input name='password' type="password" placeholder="Your password" className="input input-bordered" required />
 
                                 </div>
                                 <div className="form-control mt-6">

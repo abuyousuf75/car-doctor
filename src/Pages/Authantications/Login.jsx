@@ -1,8 +1,74 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import signupImg from '../../assets/images/login/login.svg';
 import { FaGithub, FaGoogle} from "react-icons/fa";
+import Swal from 'sweetalert2';
+import { useContext } from 'react';
+import { AuthContext } from '../../contextProvider/AuthProvider';
+import axios from 'axios';
 
 const Login = () => {
+    const {singnInUser,user} = useContext(AuthContext);
+    const location = useLocation();
+    const navigate = useNavigate();
+   
+
+    //handelLoginUser
+    const handelLoginUser = (event) =>{
+        event.preventDefault();
+      const form = event.target;
+      const userEmail = form.email.value;
+      const userPassword = form.password.value;
+      const userInfo = {userEmail, userPassword};
+      console.log(userInfo);
+
+      if(userPassword.length < 6){
+        Swal.fire({
+        icon: 'error',
+        text: 'Password must be 6 char or more',
+            
+      })
+      form.reset()
+      return
+    }
+      //singnInUser
+      singnInUser(userEmail,userPassword)
+      .then(res => {
+        console.log(res);
+        Swal.fire({
+            icon: 'success',
+            text: 'User login succesfuly',
+                
+          })
+
+          navigate(location?.state ?location?.state : '/')
+
+        /// get acces token
+        const loogdinUser = res.user;
+        console.log(loogdinUser);
+        const user = {userEmail};
+        axios.post('http://localhost:5000/jwt',user,{withCredentials:
+    true})
+        .then(res => {
+            console.log(res.data)
+        })
+
+        
+      })
+      .catch(err => {
+        console.log(err.message);
+        Swal.fire({
+            icon: 'error',
+            text: err.message,
+
+          })
+          form.reset()
+      })
+    }
+
+    console.log(user)
+
+
+
     return (
         <div className="grid md:grid-cols-2 pb-10 pt-10 justify-center items-center">
             <div className="dd">
@@ -16,18 +82,18 @@ const Login = () => {
 
                         </div>
                         <div className="card  w-full max-w-sm md:max-w-full">
-                            <form className="card-body">
+                            <form onSubmit={handelLoginUser} className="card-body">
                                 <div className="form-control">
                                     <label className="label">
                                         <span className="label-text text-lg font-bold">Email</span>
                                     </label>
-                                    <input type="email" placeholder="Your email" className="input input-bordered" required />
+                                    <input type="email" name='email' placeholder="Your email" className="input input-bordered" required />
                                 </div>
                                 <div className="form-control">
                                     <label className="label">
                                         <span className="label-text text-lg font-bold">Confirm Password</span>
                                     </label>
-                                    <input type="password" placeholder="Your password" className="input input-bordered" required />
+                                    <input type="password" name ='password' placeholder="Your password" className="input input-bordered" required />
 
                                 </div>
                                 <div className="form-control mt-6">
